@@ -14,6 +14,7 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
           imgSrc={article.urlToImage}
           title={article.title}
           sourceName={article.source.name}
+          publishedDate={article.publishedAt}
         />
       ))}
     </div>
