@@ -10,7 +10,6 @@ function App() {
     const fetchData = async () => {
       const result = await getEverything();
       setArticles(result.articles);
-      console.log("fetch resault ", result);
     };
     fetchData();
   }, []);
