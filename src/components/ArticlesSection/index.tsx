@@ -15,6 +15,7 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
           title={article.title}
           sourceName={article.source.name}
           publishedDate={article.publishedAt}
+          url={article.url}
         />
       ))}
     </div>
