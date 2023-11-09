@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TESelect } from "tw-elements-react";
 // import "tw-elements-react/dist/css/tw-elements-react.min.css";
+import { SelectData } from "tw-elements-react/dist/types/forms/Select/types";
 import { getSources } from "../../APIs/newsAPI";
 import { IArticles, ISource } from "../../models/news";
 import ArticleCard from "./articleCard";
@@ -14,31 +15,41 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
   let [searchParams, setSearchParams] = useSearchParams();
   const [sources, setSources] = useState<ISource[]>([]);
   const [searchValue, setSearchValue] = useState(
-    searchParams.get("keyword") as string
+    (searchParams.get("keyword") as string) || ""
   );
-  console.log("initial searchParams", searchParams.get("keyword"));
+  const [fromValue, setFromValue] = useState(
+    (searchParams.get("from") as string) || ""
+  );
+  const [toValue, setToValue] = useState(
+    (searchParams.get("to") as string) || ""
+  );
+  const [selectedSources, setSelectedSources] = useState<string[]>([
+    "business-insider",
+    "abc-news",
+    "google-news",
+  ]);
 
   useEffect(() => {
+    setSearchParams({ ...searchParams, sources: `${selectedSources}` });
     const fetchSources = async () => {
       const result = await getSources();
       setSources(result.sources);
-      console.log("fetched sources : ", result);
     };
     fetchSources();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const target = e.target as typeof e.target & {
-      keyword: { value: string };
-    };
-    const keyword = target.keyword.value;
-    setSearchParams({ keyword: keyword });
-    if (keyword === "") {
-      searchParams.delete("keyword");
-      setSearchParams(searchParams);
-    }
+    let newParams = {};
+    if (searchValue) newParams = { ...newParams, keyword: searchValue };
+    if (fromValue) newParams = { ...newParams, from: fromValue };
+    if (toValue) newParams = { ...newParams, to: toValue };
+    if (selectedSources.length)
+      newParams = { ...newParams, sources: `${selectedSources}` };
+    setSearchParams(newParams);
   };
+
   return (
     <>
       <div className="text-xl text-teal md:text-3xl font-bold mb-4 drop-shadow">
@@ -46,7 +57,7 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
       </div>
       <form
         onSubmit={handlSubmit}
-        className="w-full flex flex-col md:flex-row items-center mb-4 flex-wrap"
+        className="w-full flex flex-col md:flex-row items-center mb-6 flex-wrap"
       >
         <label
           htmlFor="keyword"
@@ -67,8 +78,8 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
         >
           From
           <input
-            // value={searchValue}
-            // onChange={(e) => setSearchValue(e.target.value)}
+            value={fromValue}
+            onChange={(e) => setFromValue(e.target.value)}
             autoComplete="off"
             id="from"
             type="date"
@@ -82,8 +93,8 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
         >
           To
           <input
-            // value={searchValue}
-            // onChange={(e) => setSearchValue(e.target.value)}
+            value={toValue}
+            onChange={(e) => setToValue(e.target.value)}
             autoComplete="off"
             id="to"
             type="date"
@@ -92,10 +103,11 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
         </label>
         <label
           htmlFor="multiselect"
-          className="flex font-semibold w-full md:w-fit items-center my-2"
+          className="relative flex font-semibold w-full md:w-fit items-center my-2"
         >
           Sources
           <TESelect
+            value={selectedSources}
             className="text-dark bg-grey md:mx-2 rounded px-2 py-1.5 w-1/2 ml-auto md:ml-2 md:w-fit"
             data={sources.map((source: ISource) => {
               return { text: source.name, value: source.id };
@@ -105,14 +117,34 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
             id="multiselect"
             theme={{
               dropdown: "text-dark bg-grey",
+              selectArrow: "hidden",
+            }}
+            onValueChange={(data: SelectData | SelectData[]) => {
+              if (Array.isArray(data)) {
+                let newSources: string[] = [];
+                data.forEach((data) => {
+                  newSources = [...newSources, data.value as string];
+                });
+                setSelectedSources(newSources);
+              }
             }}
           />
+          {!(selectedSources.length || searchValue) && (
+            <span className="absolute text-danger-600 top-8">
+              please enter a keyword or select at least one source please.
+            </span>
+          )}
         </label>
         <input
+          disabled={!(selectedSources.length || searchValue)}
           type="submit"
           value="Search"
-          className="flex h-fit bg-black text-teal font-semibold rounded mt-2 md:mt-0 justify-center
-         border border-teal w-full md:w-fit px-4 py-2 items-center cursor-pointer"
+          className={`flex h-fit bg-black ${
+            selectedSources.length || searchValue
+              ? "text-teal border-teal"
+              : "text-grey border-grey cursor-not-allowed"
+          } font-semibold rounded mt-2 md:mt-0 justify-center
+         border w-full md:w-fit px-4 py-2 items-center cursor-pointer`}
         />
       </form>
 

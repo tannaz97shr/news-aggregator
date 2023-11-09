@@ -9,8 +9,11 @@ function App() {
   let [searchParams] = useSearchParams();
   useEffect(() => {
     const keyword = searchParams.get("keyword") || undefined;
+    const from = searchParams.get("from") || undefined;
+    const to = searchParams.get("to") || undefined;
+    const sources = searchParams.get("sources") || undefined;
     const fetchData = async () => {
-      const result = await getEverything(keyword);
+      const result = await getEverything(keyword, from, to, sources);
       setArticles(result.articles);
     };
     fetchData();
