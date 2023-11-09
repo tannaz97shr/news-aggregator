@@ -7,7 +7,6 @@ import { IArticles } from "./models/news";
 function App() {
   const [articles, setArticles] = useState<IArticles[]>([]);
   let [searchParams] = useSearchParams();
-  console.log("search params : ", searchParams.get("keyword"));
   useEffect(() => {
     const keyword = searchParams.get("keyword") || undefined;
     const fetchData = async () => {

@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { IArticles } from "../../models/news";
+import { TESelect } from "tw-elements-react";
+// import "tw-elements-react/dist/css/tw-elements-react.min.css";
+import { getSources } from "../../APIs/newsAPI";
+import { IArticles, ISource } from "../../models/news";
 import ArticleCard from "./articleCard";
 
 interface ArticlesSectionProps {
@@ -9,10 +12,20 @@ interface ArticlesSectionProps {
 
 const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
   let [searchParams, setSearchParams] = useSearchParams();
+  const [sources, setSources] = useState<ISource[]>([]);
   const [searchValue, setSearchValue] = useState(
     searchParams.get("keyword") as string
   );
   console.log("initial searchParams", searchParams.get("keyword"));
+
+  useEffect(() => {
+    const fetchSources = async () => {
+      const result = await getSources();
+      setSources(result.sources);
+      console.log("fetched sources : ", result);
+    };
+    fetchSources();
+  }, []);
 
   const handlSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -33,7 +46,7 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
       </div>
       <form
         onSubmit={handlSubmit}
-        className="w-full flex flex-col md:flex-row items-center mb-4"
+        className="w-full flex flex-col md:flex-row items-center mb-4 flex-wrap"
       >
         <label
           htmlFor="keyword"
@@ -64,7 +77,7 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
         </label>
 
         <label
-          htmlFor="from"
+          htmlFor="to"
           className="flex font-semibold w-full md:w-fit items-center my-2"
         >
           To
@@ -77,11 +90,29 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
             className="text-dark bg-grey md:mx-2 rounded px-2 py-1.5 w-1/2 ml-auto md:ml-2 md:w-fit"
           />
         </label>
+        <label
+          htmlFor="multiselect"
+          className="flex font-semibold w-full md:w-fit items-center my-2"
+        >
+          Sources
+          <TESelect
+            className="text-dark bg-grey md:mx-2 rounded px-2 py-1.5 w-1/2 ml-auto md:ml-2 md:w-fit"
+            data={sources.map((source: ISource) => {
+              return { text: source.name, value: source.id };
+            })}
+            multiple
+            selectAll={false}
+            id="multiselect"
+            theme={{
+              dropdown: "text-dark bg-grey",
+            }}
+          />
+        </label>
         <input
           type="submit"
           value="Search"
           className="flex h-fit bg-black text-teal font-semibold rounded mt-2 md:mt-0 justify-center
-         border border-teal w-full md:w-fit px-4 py-2 items-center md:ml-auto cursor-pointer"
+         border border-teal w-full md:w-fit px-4 py-2 items-center cursor-pointer"
         />
       </form>
 
