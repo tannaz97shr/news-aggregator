@@ -2,10 +2,14 @@ import { INewsResponse } from "../models/news";
 
 const apiKey: string = process.env.REACT_APP_NEWS_API_KEY as string;
 
-export const getEverything = async (): Promise<INewsResponse> => {
+export const getEverything = async (
+  keyword?: string
+): Promise<INewsResponse> => {
   try {
     const response = await fetch(
-      "https://newsapi.org/v2/everything?sources=business-insider,abc-news,google-news&pageSize=27&page=1",
+      `https://newsapi.org/v2/everything?sources=business-insider,abc-news,google-news&${
+        keyword ? `q=${keyword}&` : ""
+      }pageSize=27&page=1`,
       {
         headers: { Authorization: apiKey },
       }

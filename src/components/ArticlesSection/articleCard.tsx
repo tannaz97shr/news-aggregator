@@ -19,8 +19,8 @@ const ArticleCard = ({
   const date = new Date(publishedDate);
   return (
     <Link
-      className="flex flex-col w-full md:w-[49%] xl:w-[32%] aspect-square max-w-[25rem] my-3 overflow-hidden
-    bg-black shadow shadow-grey hover:shadow-teal"
+      className="flex flex-col w-full md:w-[49%] xl:w-[32%] aspect-square max-w-[30rem] my-3 overflow-hidden
+    bg-black shadow shadow-grey hover:shadow-teal mx-auto"
       to={`articles/${title}`}
     >
       {imgSrc ? (
