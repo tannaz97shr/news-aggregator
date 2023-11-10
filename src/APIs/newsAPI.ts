@@ -6,15 +6,17 @@ export const getEverything = async (
   keyword?: string,
   from?: string,
   to?: string,
-  sources?: string
+  sources?: string,
+  page?: string,
+  pageSize?: number
 ): Promise<INewsResponse> => {
   try {
     const response = await fetch(
-      `https://newsapi.org/v2/everything?${
+      `https://newsapi.org/v2/everything?language=en&${
         sources ? `sources=${sources}&` : ""
-      }${keyword ? `q=${keyword}&` : ""}${from ? `q=${from}&` : ""}${
-        to ? `q=${to}&` : ""
-      }pageSize=27&page=1`,
+      }${keyword ? `q=${keyword}&` : ""}${from ? `from=${from}&` : ""}${
+        to ? `to=${to}&` : ""
+      }pageSize=${pageSize ? pageSize : 10}&page=${page ? page : 1}`,
       {
         headers: { Authorization: apiKey },
       }

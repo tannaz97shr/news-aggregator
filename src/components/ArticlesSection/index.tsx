@@ -1,19 +1,31 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TESelect } from "tw-elements-react";
-// import "tw-elements-react/dist/css/tw-elements-react.min.css";
 import { SelectData } from "tw-elements-react/dist/types/forms/Select/types";
 import { getSources } from "../../APIs/newsAPI";
 import { IArticles, ISource } from "../../models/news";
 import ArticleCard from "./articleCard";
+import Pagination from "./pagination";
 
 interface ArticlesSectionProps {
   articles: IArticles[];
+  totalResult: number;
+  pageSize: number;
 }
 
-const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
+const ArticlesSection = ({
+  articles,
+  totalResult,
+  pageSize,
+}: ArticlesSectionProps) => {
   let [searchParams, setSearchParams] = useSearchParams();
   const [sources, setSources] = useState<ISource[]>([]);
+  const [pageNumber, setPageNumber] = useState<number>(
+    Number(searchParams.get("page")) > Math.ceil(totalResult / pageSize)
+      ? 1
+      : Number(searchParams.get("page"))
+  );
+  //pageNumber > Math.ceil(totalResult / pageSize)
   const [searchValue, setSearchValue] = useState(
     (searchParams.get("keyword") as string) || ""
   );
@@ -30,7 +42,16 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
   ]);
 
   useEffect(() => {
-    setSearchParams({ ...searchParams, sources: `${selectedSources}` });
+    if (pageNumber > Math.ceil(totalResult / pageSize))
+      setSearchParams({
+        ...searchParams,
+        sources: `${selectedSources}`,
+        page: pageNumber.toString(),
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageNumber, selectedSources]);
+
+  useEffect(() => {
     const fetchSources = async () => {
       const result = await getSources();
       setSources(result.sources);
@@ -160,6 +181,17 @@ const ArticlesSection = ({ articles }: ArticlesSectionProps) => {
           />
         ))}
       </div>
+      <Pagination
+        totalCount={totalResult}
+        currentPage={pageNumber}
+        goToNextPage={() => {
+          setPageNumber(pageNumber + 1);
+        }}
+        goToPreviousPage={() => {
+          setPageNumber(pageNumber - 1);
+        }}
+        pageSize={pageSize}
+      />
     </>
   );
 };
