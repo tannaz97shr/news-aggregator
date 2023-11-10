@@ -11,12 +11,14 @@ interface ArticlesSectionProps {
   articles: IArticles[];
   totalResult: number;
   pageSize: number;
+  errorMessage?: string;
 }
 
 const ArticlesSection = ({
   articles,
   totalResult,
   pageSize,
+  errorMessage,
 }: ArticlesSectionProps) => {
   let [searchParams, setSearchParams] = useSearchParams();
   const [sources, setSources] = useState<ISource[]>([]);
@@ -168,30 +170,40 @@ const ArticlesSection = ({
          border w-full md:w-fit px-4 py-2 items-center cursor-pointer`}
         />
       </form>
+      {errorMessage ? (
+        <div className="flex flex-wrap font-bold text-danger-600 text-lg">
+          Error: {errorMessage}
+        </div>
+      ) : (
+        <div className="flex flex-wrap">
+          {articles.map((article: IArticles) => (
+            <ArticleCard
+              key={article.url}
+              imgSrc={article.urlToImage}
+              title={article.title}
+              sourceName={article.source.name}
+              publishedDate={article.publishedAt}
+              url={article.url}
+            />
+          ))}
+        </div>
+      )}
 
-      <div className="flex flex-wrap">
-        {articles.map((article: IArticles) => (
-          <ArticleCard
-            key={article.url}
-            imgSrc={article.urlToImage}
-            title={article.title}
-            sourceName={article.source.name}
-            publishedDate={article.publishedAt}
-            url={article.url}
-          />
-        ))}
-      </div>
-      <Pagination
-        totalCount={totalResult}
-        currentPage={pageNumber}
-        goToNextPage={() => {
-          setPageNumber(pageNumber + 1);
-        }}
-        goToPreviousPage={() => {
-          setPageNumber(pageNumber - 1);
-        }}
-        pageSize={pageSize}
-      />
+      {articles.length ? (
+        <Pagination
+          totalCount={totalResult}
+          currentPage={pageNumber}
+          goToNextPage={() => {
+            setPageNumber(pageNumber + 1);
+          }}
+          goToPreviousPage={() => {
+            setPageNumber(pageNumber - 1);
+          }}
+          pageSize={pageSize}
+        />
+      ) : (
+        <></>
+      )}
     </>
   );
 };

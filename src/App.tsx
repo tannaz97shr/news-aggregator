@@ -6,6 +6,7 @@ import { IArticles } from "./models/news";
 
 function App() {
   const [articles, setArticles] = useState<IArticles[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>();
   const [totalResult, setTotalResult] = useState<number>(0);
   let [searchParams] = useSearchParams();
   const { innerWidth: width } = window;
@@ -25,6 +26,10 @@ function App() {
         page,
         pageSize
       );
+      if (result.message) {
+        setErrorMessage(result.message);
+        return;
+      }
       setArticles(result.articles);
       if (result.totalResults) setTotalResult(result.totalResults);
     };
@@ -36,6 +41,7 @@ function App() {
       pageSize={pageSize}
       articles={articles}
       totalResult={totalResult}
+      errorMessage={errorMessage}
     />
   );
 }

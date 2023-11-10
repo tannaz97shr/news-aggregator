@@ -22,9 +22,7 @@ export const getEverything = async (
       }
     );
     const news: INewsResponse = await response.json();
-    if (news.status !== "ok") {
-      throw new Error(news.message && news.message);
-    }
+    console.log("get everything, news: ", news);
     return news;
   } catch (e) {
     console.error("fetching error", e);
