@@ -1,12 +1,31 @@
+import { ISource } from "../../models/news";
+import Button from "../UI/Button";
+
 interface SourceTagProps {
   name: string;
+  source?: ISource;
+  onClick?: () => void;
 }
 
-const SourceTag = ({ name }: SourceTagProps) => {
+const SourceTag = ({ name, source, onClick }: SourceTagProps) => {
   return (
-    <span className="text-sm h-fit rounded-lg border border-grey bg-teal text-black px-2 py-1.5">
-      {name}
-    </span>
+    <>
+      {source ? (
+        <Button
+          onClick={() => {
+            onClick && onClick();
+          }}
+          className="z-20 hover:font-bold hover:border-2 hoverborder-teal 
+        hover:shadow-xl shadow-teal"
+        >
+          {source.name}
+        </Button>
+      ) : (
+        <span className="text-sm h-fit rounded-lg border border-grey bg-teal text-black px-2 py-1.5">
+          {name}
+        </span>
+      )}
+    </>
   );
 };
 

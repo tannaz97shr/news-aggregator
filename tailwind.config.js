@@ -13,6 +13,7 @@ module.exports = {
       dark: "#393E46",
       teal: "#00ADB5",
       grey: "#eeeeee",
+      backdrop: "rgba(0,0,0, 0.5)",
     },
     extend: {},
   },

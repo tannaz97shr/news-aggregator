@@ -55,7 +55,6 @@ const ArticlesSection = ({
   }, [errorMessage, articles]);
 
   useEffect(() => {
-    console.log("page number", selectedSources);
     setSearchParams({
       ...searchParams,
       sources: `${selectedSources}`,
@@ -193,8 +192,9 @@ const ArticlesSection = ({
       </form>
       {isLoading ? (
         <div className="flex flex-wrap">
-          {[...new Array(pageSize)].map((item) => (
+          {[...new Array(pageSize)].map((_, index) => (
             <div
+              key={index}
               className="flex flex-col w-full md:w-[49%] xl:w-[32%] aspect-square max-w-[30rem] my-3 overflow-hidden
             bg-black shadow shadow-grey hover:shadow-teal mx-auto animate-pulse"
             ></div>
@@ -210,27 +210,32 @@ const ArticlesSection = ({
               sourceName={article.source.name}
               publishedDate={article.publishedAt}
               url={article.url}
+              source={sources.find((src: ISource) => {
+                return src.id === article.source.id;
+              })}
             />
           ))}
         </div>
       ) : (
-        <>
-          <div className="flex flex-col items-center w-fit mx-auto font-medium mt-16 lg:mt-24 mb-8 text-color-grey text-center">
-            <div className="text-[40px] mb-6">
-              We couldn’t find any Articles
+        !displayError && (
+          <>
+            <div className="flex flex-col items-center w-fit mx-auto font-medium mt-16 lg:mt-24 mb-8 text-color-grey text-center">
+              <div className="text-[40px] mb-6">
+                We couldn’t find any Articles
+              </div>
+              <div className="text-[30px] ">Try to reset filters</div>
             </div>
-            <div className="text-[30px] ">Try to reset filters</div>
-          </div>
-          <div className="flex w-full">
-            <Button
-              onClick={() => resetFiltersHandler()}
-              variant="secondary"
-              className="mx-auto"
-            >
-              Reset Filters
-            </Button>
-          </div>
-        </>
+            <div className="flex w-full">
+              <Button
+                onClick={() => resetFiltersHandler()}
+                variant="secondary"
+                className="mx-auto"
+              >
+                Reset Filters
+              </Button>
+            </div>
+          </>
+        )
       )}
       {displayError ? (
         <div className="flex flex-wrap font-bold text-danger-600 text-lg">
