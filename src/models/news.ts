@@ -19,3 +19,20 @@ export interface INewsResponse {
   code?: string;
   message?: string;
 }
+
+export interface ISource {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  category: string;
+  language: string;
+  country: string;
+}
+
+export interface ISourceResponse {
+  status?: string;
+  sources: ISource[];
+  code?: string;
+  message?: string;
+}

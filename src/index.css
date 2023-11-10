@@ -16,3 +16,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.dropdown {
+  @apply bg-teal;
+}
+
+#multiselect {
+  padding: 0;
+}
+#multiselect input {
+  @apply truncate;
+}

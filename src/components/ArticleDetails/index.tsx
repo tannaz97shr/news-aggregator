@@ -2,7 +2,7 @@ import { Link, useLoaderData } from "react-router-dom";
 import { getArticleByTitle } from "../../APIs/newsAPI";
 import { IArticles, INewsResponse } from "../../models/news";
 import SourceTag from "../ArticlesSection/sourceTag";
-import { IconExternal } from "../Icons";
+import { IconExternal } from "../UI/Icons";
 
 export async function loader({ params }: { params: any }) {
   const news: INewsResponse = await getArticleByTitle(params.title);
