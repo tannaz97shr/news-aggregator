@@ -13,6 +13,7 @@ interface ArticlesSectionProps {
   totalResult: number;
   pageSize: number;
   errorMessage?: string;
+  isLoading: boolean;
 }
 
 const ArticlesSection = ({
@@ -20,15 +21,18 @@ const ArticlesSection = ({
   totalResult,
   pageSize,
   errorMessage,
+  isLoading,
 }: ArticlesSectionProps) => {
   let [searchParams, setSearchParams] = useSearchParams();
   const [sources, setSources] = useState<ISource[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(
-    Number(searchParams.get("page")) > Math.ceil(totalResult / pageSize)
-      ? 1
-      : Number(searchParams.get("page"))
+    Number(searchParams.get("page"))
+      ? Number(searchParams.get("page")) > Math.ceil(totalResult / pageSize)
+        ? 1
+        : Number(searchParams.get("page"))
+      : 1
   );
-  //pageNumber > Math.ceil(totalResult / pageSize)
+
   const [searchValue, setSearchValue] = useState(
     (searchParams.get("keyword") as string) || ""
   );
@@ -44,15 +48,20 @@ const ArticlesSection = ({
     "google-news",
   ]);
 
+  const [displayError, setDisplayError] = useState<boolean>(false);
+
   useEffect(() => {
-    if (pageNumber > Math.ceil(totalResult / pageSize))
-      setSearchParams({
-        ...searchParams,
-        sources: `${selectedSources}`,
-        page: pageNumber.toString(),
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageNumber, selectedSources]);
+    setDisplayError(errorMessage ? articles.length === 0 : false);
+  }, [errorMessage, articles]);
+
+  useEffect(() => {
+    console.log("page number", selectedSources);
+    setSearchParams({
+      ...searchParams,
+      sources: `${selectedSources}`,
+      page: pageNumber.toString(),
+    });
+  }, [pageNumber, searchParams, selectedSources, setSearchParams]);
 
   useEffect(() => {
     const fetchSources = async () => {
@@ -70,6 +79,7 @@ const ArticlesSection = ({
     setSelectedSources(["business-insider", "abc-news", "google-news"]);
     setSearchParams({
       sources: `${selectedSources}`,
+      page: "1",
     });
   };
 
@@ -80,7 +90,7 @@ const ArticlesSection = ({
     if (fromValue) newParams = { ...newParams, from: fromValue };
     if (toValue) newParams = { ...newParams, to: toValue };
     if (selectedSources.length)
-      newParams = { ...newParams, sources: `${selectedSources}` };
+      newParams = { ...newParams, sources: `${selectedSources}`, page: "1" };
     setSearchParams(newParams);
   };
 
@@ -181,25 +191,28 @@ const ArticlesSection = ({
          border w-full md:w-fit px-4 py-2 items-center cursor-pointer`}
         />
       </form>
-      {articles.length ? (
-        errorMessage ? (
-          <div className="flex flex-wrap font-bold text-danger-600 text-lg">
-            Error: {errorMessage}
-          </div>
-        ) : (
-          <div className="flex flex-wrap">
-            {articles.map((article: IArticles) => (
-              <ArticleCard
-                key={article.url}
-                imgSrc={article.urlToImage}
-                title={article.title}
-                sourceName={article.source.name}
-                publishedDate={article.publishedAt}
-                url={article.url}
-              />
-            ))}
-          </div>
-        )
+      {isLoading ? (
+        <div className="flex flex-wrap">
+          {[...new Array(pageSize)].map((item) => (
+            <div
+              className="flex flex-col w-full md:w-[49%] xl:w-[32%] aspect-square max-w-[30rem] my-3 overflow-hidden
+            bg-black shadow shadow-grey hover:shadow-teal mx-auto animate-pulse"
+            ></div>
+          ))}
+        </div>
+      ) : articles.length ? (
+        <div className="flex flex-wrap">
+          {articles.map((article: IArticles) => (
+            <ArticleCard
+              key={article.url}
+              imgSrc={article.urlToImage}
+              title={article.title}
+              sourceName={article.source.name}
+              publishedDate={article.publishedAt}
+              url={article.url}
+            />
+          ))}
+        </div>
       ) : (
         <>
           <div className="flex flex-col items-center w-fit mx-auto font-medium mt-16 lg:mt-24 mb-8 text-color-grey text-center">
@@ -219,7 +232,13 @@ const ArticlesSection = ({
           </div>
         </>
       )}
-
+      {displayError ? (
+        <div className="flex flex-wrap font-bold text-danger-600 text-lg">
+          Error: {errorMessage}
+        </div>
+      ) : (
+        <></>
+      )}
       {articles.length ? (
         <Pagination
           totalCount={totalResult}

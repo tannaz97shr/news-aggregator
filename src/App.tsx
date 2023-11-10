@@ -8,6 +8,7 @@ function App() {
   const [articles, setArticles] = useState<IArticles[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>();
   const [totalResult, setTotalResult] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   let [searchParams] = useSearchParams();
   const { innerWidth: width } = window;
   const pageSize: number = width > 1279 ? 30 : width > 766 ? 20 : 10;
@@ -18,6 +19,7 @@ function App() {
     const sources = searchParams.get("sources") || undefined;
     const page = searchParams.get("page") || "1";
     const fetchData = async () => {
+      setIsLoading(true);
       const result = await getEverything(
         keyword,
         from,
@@ -28,10 +30,12 @@ function App() {
       );
       if (result.message) {
         setErrorMessage(result.message);
+        setIsLoading(false);
         return;
       }
       setArticles(result.articles);
       if (result.totalResults) setTotalResult(result.totalResults);
+      setIsLoading(false);
     };
     fetchData();
   }, [pageSize, searchParams]);
@@ -42,6 +46,7 @@ function App() {
       articles={articles}
       totalResult={totalResult}
       errorMessage={errorMessage}
+      isLoading={isLoading}
     />
   );
 }
