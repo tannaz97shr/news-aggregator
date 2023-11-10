@@ -4,6 +4,7 @@ import { TESelect } from "tw-elements-react";
 import { SelectData } from "tw-elements-react/dist/types/forms/Select/types";
 import { getSources } from "../../APIs/newsAPI";
 import { IArticles, ISource } from "../../models/news";
+import Button from "../UI/Button";
 import ArticleCard from "./articleCard";
 import Pagination from "./pagination";
 
@@ -61,6 +62,16 @@ const ArticlesSection = ({
     fetchSources();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const resetFiltersHandler = () => {
+    setSearchValue("");
+    setFromValue("");
+    setToValue("");
+    setSelectedSources(["business-insider", "abc-news", "google-news"]);
+    setSearchParams({
+      sources: `${selectedSources}`,
+    });
+  };
 
   const handlSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -170,23 +181,43 @@ const ArticlesSection = ({
          border w-full md:w-fit px-4 py-2 items-center cursor-pointer`}
         />
       </form>
-      {errorMessage ? (
-        <div className="flex flex-wrap font-bold text-danger-600 text-lg">
-          Error: {errorMessage}
-        </div>
+      {articles.length ? (
+        errorMessage ? (
+          <div className="flex flex-wrap font-bold text-danger-600 text-lg">
+            Error: {errorMessage}
+          </div>
+        ) : (
+          <div className="flex flex-wrap">
+            {articles.map((article: IArticles) => (
+              <ArticleCard
+                key={article.url}
+                imgSrc={article.urlToImage}
+                title={article.title}
+                sourceName={article.source.name}
+                publishedDate={article.publishedAt}
+                url={article.url}
+              />
+            ))}
+          </div>
+        )
       ) : (
-        <div className="flex flex-wrap">
-          {articles.map((article: IArticles) => (
-            <ArticleCard
-              key={article.url}
-              imgSrc={article.urlToImage}
-              title={article.title}
-              sourceName={article.source.name}
-              publishedDate={article.publishedAt}
-              url={article.url}
-            />
-          ))}
-        </div>
+        <>
+          <div className="flex flex-col items-center w-fit mx-auto font-medium mt-16 lg:mt-24 mb-8 text-color-grey text-center">
+            <div className="text-[40px] mb-6">
+              We couldn’t find any Articles
+            </div>
+            <div className="text-[30px] ">Try to reset filters</div>
+          </div>
+          <div className="flex w-full">
+            <Button
+              onClick={() => resetFiltersHandler()}
+              variant="secondary"
+              className="mx-auto"
+            >
+              Reset Filters
+            </Button>
+          </div>
+        </>
       )}
 
       {articles.length ? (

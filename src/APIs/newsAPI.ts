@@ -22,7 +22,6 @@ export const getEverything = async (
       }
     );
     const news: INewsResponse = await response.json();
-    console.log("get everything, news: ", news);
     return news;
   } catch (e) {
     console.error("fetching error", e);
