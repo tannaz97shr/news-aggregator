@@ -7,7 +7,6 @@ import { getSources } from "../../APIs/newsAPI";
 import { IArticles, ISource } from "../../models/news";
 import type { RootState } from "../../store";
 import Button from "../UI/Button";
-import Modal from "../UI/Modal";
 import ArticleCard from "./articleCard";
 import Pagination from "./pagination";
 
@@ -38,9 +37,6 @@ const ArticlesSection = ({
         : Number(searchParams.get("page"))
       : 1
   );
-  const [showPersonalizeForm, setShowPersonalizeForm] =
-    useState<boolean>(false);
-
   const [searchValue, setSearchValue] = useState(
     (searchParams.get("keyword") as string) || ""
   );
@@ -81,6 +77,7 @@ const ArticlesSection = ({
     // }
   }, [articles, favorites.author]);
 
+  console.log("articles", articles);
   useEffect(() => {
     setSelectedSources(
       favorites.category.length
@@ -134,18 +131,8 @@ const ArticlesSection = ({
 
   return (
     <>
-      {showPersonalizeForm ? (
-        <Modal closeHandler={() => setShowPersonalizeForm(false)}>
-          <div>form</div>
-        </Modal>
-      ) : null}
-      <div className="flex justify-between items-start">
-        <div className="text-xl text-teal md:text-3xl font-bold mb-4 drop-shadow">
-          News API Articles
-        </div>
-        <Button onClick={() => setShowPersonalizeForm(true)}>
-          Personalize Your News Feed
-        </Button>
+      <div className="text-xl text-teal md:text-3xl font-bold mb-4 drop-shadow">
+        News API Articles
       </div>
       <form
         onSubmit={handlSubmit}
@@ -294,20 +281,22 @@ const ArticlesSection = ({
         <></>
       )}
       {articles.length ? (
-        <Pagination
-          totalCount={totalResult}
-          currentPage={pageNumber}
-          goToNextPage={() => {
-            setPageNumber(pageNumber + 1);
-          }}
-          goToPreviousPage={() => {
-            setPageNumber(pageNumber - 1);
-          }}
-          pageSize={pageSize}
-        />
-      ) : (
-        <></>
-      )}
+        favorites.author.length ? (
+          <Pagination
+            totalCount={totalResult}
+            currentPage={pageNumber}
+            goToNextPage={() => {
+              setPageNumber(pageNumber + 1);
+            }}
+            goToPreviousPage={() => {
+              setPageNumber(pageNumber - 1);
+            }}
+            pageSize={pageSize}
+          />
+        ) : (
+          <></>
+        )
+      ) : null}
     </>
   );
 };
