@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { TESelect } from "tw-elements-react";
 import { SelectData } from "tw-elements-react/dist/types/forms/Select/types";
 import { getSources } from "../../APIs/newsAPI";
 import { IArticles, ISource } from "../../models/news";
+import type { RootState } from "../../store";
 import Button from "../UI/Button";
 import Modal from "../UI/Modal";
 import ArticleCard from "./articleCard";
@@ -24,6 +26,8 @@ const ArticlesSection = ({
   errorMessage,
   isLoading,
 }: ArticlesSectionProps) => {
+  const favorites = useSelector((state: RootState) => state.favorites);
+  console.log("favorites :", favorites);
   let [searchParams, setSearchParams] = useSearchParams();
   const [sources, setSources] = useState<ISource[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(

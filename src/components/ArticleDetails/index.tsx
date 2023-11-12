@@ -1,5 +1,7 @@
+import { useDispatch } from "react-redux";
 import { Link, useLoaderData } from "react-router-dom";
 import { getArticleByTitle } from "../../APIs/newsAPI";
+import { addAuthor } from "../../features/favorites/favoritesSlice";
 import { IArticles, INewsResponse } from "../../models/news";
 import SourceTag from "../ArticlesSection/sourceTag";
 import { IconExternal, IconFavorite } from "../UI/Icons";
@@ -13,6 +15,7 @@ export async function loader({ params }: { params: any }) {
 }
 
 const ArticleDetails = () => {
+  const dispatch = useDispatch();
   const { article } = useLoaderData() as { article: IArticles };
   if (!article.title) {
     return <div>No Article found</div>;
@@ -33,7 +36,7 @@ const ArticleDetails = () => {
             </div>
             <button
               className="flex items-center text-teal underline"
-              onClick={() => console.log("add favorite author")}
+              onClick={() => dispatch(addAuthor(article.author))}
             >
               <span>Add this category to Favorites</span>
               <IconFavorite className="w-4 h-4" />

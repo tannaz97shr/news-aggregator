@@ -1,4 +1,10 @@
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+
+import {
+  addCategory,
+  addSource,
+} from "../../features/favorites/favoritesSlice";
 import { ISource } from "../../models/news";
 import Button from "../UI/Button";
 import { IconFavorite } from "../UI/Icons";
@@ -8,6 +14,7 @@ interface SourceDetailsProps {
 }
 
 const SourceDetails = ({ displaySource }: SourceDetailsProps) => {
+  const dispatch = useDispatch();
   return (
     <div className="relative">
       <div className="font-bold text-xl w-fit m-auto mb-6">
@@ -20,7 +27,7 @@ const SourceDetails = ({ displaySource }: SourceDetailsProps) => {
         {" ("}
         <button
           className="flex items-center text-teal underline"
-          onClick={() => console.log("add favorite category")}
+          onClick={() => dispatch(addCategory(displaySource.category))}
         >
           <span>Add this category to Favorites</span>
           <IconFavorite className="w-4 h-4" />
@@ -41,7 +48,7 @@ const SourceDetails = ({ displaySource }: SourceDetailsProps) => {
 
       <Button
         className="flex items-center mt-4"
-        onClick={() => console.log("add favorite source")}
+        onClick={() => dispatch(addSource(displaySource))}
       >
         <IconFavorite className="w-6 h-6 mr-2" />{" "}
         <span>Add {displaySource.name} to Favorites</span>
