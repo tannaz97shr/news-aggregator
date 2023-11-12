@@ -15,13 +15,13 @@ const SourceTag = ({ name, source, onClick }: SourceTagProps) => {
           onClick={() => {
             onClick && onClick();
           }}
-          className="z-20 hover:font-bold hover:border-2 hoverborder-teal 
+          className="w-fitz-20 hover:font-bold hover:border-2 hoverborder-teal 
         hover:shadow-xl shadow-teal"
         >
           {source.name}
         </Button>
       ) : (
-        <span className="text-sm h-fit rounded-lg border border-grey bg-teal text-black px-2 py-1.5">
+        <span className="w-fit text-sm h-fit rounded-lg border border-grey bg-teal text-black px-2 py-1.5">
           {name}
         </span>
       )}

@@ -2,7 +2,7 @@ import { Link, useLoaderData } from "react-router-dom";
 import { getArticleByTitle } from "../../APIs/newsAPI";
 import { IArticles, INewsResponse } from "../../models/news";
 import SourceTag from "../ArticlesSection/sourceTag";
-import { IconExternal } from "../UI/Icons";
+import { IconExternal, IconFavorite } from "../UI/Icons";
 
 export async function loader({ params }: { params: any }) {
   const news: INewsResponse = await getArticleByTitle(params.title);
@@ -24,11 +24,20 @@ const ArticleDetails = () => {
       <div className="text-xl text-teal md:text-3xl font-bold mb-4 drop-shadow">
         {article.title}
       </div>
-      <div className="flex justify-between">
+      <div className="flex flex-col md:flex-row mb-2 justify-between">
         <div className="flex flex-col mb-4">
-          <div>
-            <span>Author : </span>
-            <span className="font-semibold">{article.author}</span>
+          <div className="flex flex-col md:flex-row">
+            <div>
+              <span>Author : </span>
+              <span className="font-semibold mr-2">{article.author}</span>
+            </div>
+            <button
+              className="flex items-center text-teal underline"
+              onClick={() => console.log("add favorite author")}
+            >
+              <span>Add this category to Favorites</span>
+              <IconFavorite className="w-4 h-4" />
+            </button>
           </div>
           <div>
             <span>published at : </span>

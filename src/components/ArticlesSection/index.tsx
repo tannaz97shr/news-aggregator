@@ -5,6 +5,7 @@ import { SelectData } from "tw-elements-react/dist/types/forms/Select/types";
 import { getSources } from "../../APIs/newsAPI";
 import { IArticles, ISource } from "../../models/news";
 import Button from "../UI/Button";
+import Modal from "../UI/Modal";
 import ArticleCard from "./articleCard";
 import Pagination from "./pagination";
 
@@ -32,6 +33,8 @@ const ArticlesSection = ({
         : Number(searchParams.get("page"))
       : 1
   );
+  const [showPersonalizeForm, setShowPersonalizeForm] =
+    useState<boolean>(false);
 
   const [searchValue, setSearchValue] = useState(
     (searchParams.get("keyword") as string) || ""
@@ -95,8 +98,18 @@ const ArticlesSection = ({
 
   return (
     <>
-      <div className="text-xl text-teal md:text-3xl font-bold mb-4 drop-shadow">
-        News API Articles
+      {showPersonalizeForm ? (
+        <Modal closeHandler={() => setShowPersonalizeForm(false)}>
+          <div>form</div>
+        </Modal>
+      ) : null}
+      <div className="flex justify-between items-start">
+        <div className="text-xl text-teal md:text-3xl font-bold mb-4 drop-shadow">
+          News API Articles
+        </div>
+        <Button onClick={() => setShowPersonalizeForm(true)}>
+          Personalize Your News Feed
+        </Button>
       </div>
       <form
         onSubmit={handlSubmit}
