@@ -49,17 +49,37 @@ const ArticlesSection = ({
   const [toValue, setToValue] = useState(
     (searchParams.get("to") as string) || ""
   );
-  const [selectedSources, setSelectedSources] = useState<string[]>([
-    "business-insider",
-    "abc-news",
-    "google-news",
-  ]);
+  const [selectedSources, setSelectedSources] = useState<string[]>(
+    favorites.sources.length
+      ? favorites.sources.map((src: ISource) => src.id)
+      : ["business-insider", "abc-news", "google-news"]
+  );
 
   const [displayError, setDisplayError] = useState<boolean>(false);
 
   useEffect(() => {
     setDisplayError(errorMessage ? articles.length === 0 : false);
   }, [errorMessage, articles]);
+
+  useEffect(() => {
+    setSelectedSources(
+      favorites.sources.length
+        ? favorites.sources.map((src: ISource) => src.id)
+        : ["business-insider", "abc-news", "google-news"]
+    );
+  }, [favorites.sources]);
+
+  useEffect(() => {
+    setSelectedSources(
+      favorites.category.length
+        ? [
+            ...sources.filter((src: ISource) =>
+              favorites.category.includes(src.category)
+            ),
+          ].map((src: ISource) => src.id)
+        : ["business-insider", "abc-news", "google-news"]
+    );
+  }, [favorites.category, sources]);
 
   useEffect(() => {
     setSearchParams({
