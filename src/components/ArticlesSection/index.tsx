@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { TESelect } from "tw-elements-react";
 import { SelectData } from "tw-elements-react/dist/types/forms/Select/types";
 import { getSources } from "../../APIs/newsAPI";
 import { IArticles, ISource } from "../../models/news";
+import type { RootState } from "../../store";
 import Button from "../UI/Button";
+import Modal from "../UI/Modal";
 import ArticleCard from "./articleCard";
 import Pagination from "./pagination";
 
@@ -23,8 +26,11 @@ const ArticlesSection = ({
   errorMessage,
   isLoading,
 }: ArticlesSectionProps) => {
+  const favorites = useSelector((state: RootState) => state.favorites);
   let [searchParams, setSearchParams] = useSearchParams();
   const [sources, setSources] = useState<ISource[]>([]);
+  const [articlesToDisplay, setArticlesToDisplay] =
+    useState<IArticles[]>(articles);
   const [pageNumber, setPageNumber] = useState<number>(
     Number(searchParams.get("page"))
       ? Number(searchParams.get("page")) > Math.ceil(totalResult / pageSize)
@@ -32,6 +38,8 @@ const ArticlesSection = ({
         : Number(searchParams.get("page"))
       : 1
   );
+  const [showPersonalizeForm, setShowPersonalizeForm] =
+    useState<boolean>(false);
 
   const [searchValue, setSearchValue] = useState(
     (searchParams.get("keyword") as string) || ""
@@ -42,17 +50,48 @@ const ArticlesSection = ({
   const [toValue, setToValue] = useState(
     (searchParams.get("to") as string) || ""
   );
-  const [selectedSources, setSelectedSources] = useState<string[]>([
-    "business-insider",
-    "abc-news",
-    "google-news",
-  ]);
+  const [selectedSources, setSelectedSources] = useState<string[]>(
+    favorites.sources.length
+      ? favorites.sources.map((src: ISource) => src.id)
+      : ["business-insider", "abc-news", "google-news"]
+  );
 
   const [displayError, setDisplayError] = useState<boolean>(false);
 
   useEffect(() => {
     setDisplayError(errorMessage ? articles.length === 0 : false);
   }, [errorMessage, articles]);
+
+  useEffect(() => {
+    setSelectedSources(
+      favorites.sources.length
+        ? favorites.sources.map((src: ISource) => src.id)
+        : ["business-insider", "abc-news", "google-news"]
+    );
+  }, [favorites.sources]);
+
+  useEffect(() => {
+    setArticlesToDisplay(
+      favorites.author.length
+        ? articles.filter((article: IArticles) =>
+            favorites.author.includes(article.author)
+          )
+        : articles
+    );
+    // }
+  }, [articles, favorites.author]);
+
+  useEffect(() => {
+    setSelectedSources(
+      favorites.category.length
+        ? [
+            ...sources.filter((src: ISource) =>
+              favorites.category.includes(src.category)
+            ),
+          ].map((src: ISource) => src.id)
+        : ["business-insider", "abc-news", "google-news"]
+    );
+  }, [favorites.category, sources]);
 
   useEffect(() => {
     setSearchParams({
@@ -95,8 +134,18 @@ const ArticlesSection = ({
 
   return (
     <>
-      <div className="text-xl text-teal md:text-3xl font-bold mb-4 drop-shadow">
-        News API Articles
+      {showPersonalizeForm ? (
+        <Modal closeHandler={() => setShowPersonalizeForm(false)}>
+          <div>form</div>
+        </Modal>
+      ) : null}
+      <div className="flex justify-between items-start">
+        <div className="text-xl text-teal md:text-3xl font-bold mb-4 drop-shadow">
+          News API Articles
+        </div>
+        <Button onClick={() => setShowPersonalizeForm(true)}>
+          Personalize Your News Feed
+        </Button>
       </div>
       <form
         onSubmit={handlSubmit}
@@ -202,7 +251,7 @@ const ArticlesSection = ({
         </div>
       ) : articles.length ? (
         <div className="flex flex-wrap">
-          {articles.map((article: IArticles) => (
+          {articlesToDisplay.map((article: IArticles) => (
             <ArticleCard
               key={article.url}
               imgSrc={article.urlToImage}
