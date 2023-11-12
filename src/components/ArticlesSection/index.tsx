@@ -279,23 +279,21 @@ const ArticlesSection = ({
       ) : (
         <></>
       )}
-      {articles.length ? (
-        favorites.author.length ? (
-          <Pagination
-            totalCount={totalResult}
-            currentPage={pageNumber}
-            goToNextPage={() => {
-              setPageNumber(pageNumber + 1);
-            }}
-            goToPreviousPage={() => {
-              setPageNumber(pageNumber - 1);
-            }}
-            pageSize={pageSize}
-          />
-        ) : (
-          <></>
-        )
-      ) : null}
+      {favorites.author.length ? null : articles.length ? (
+        <Pagination
+          totalCount={totalResult}
+          currentPage={pageNumber}
+          goToNextPage={() => {
+            setPageNumber(pageNumber + 1);
+          }}
+          goToPreviousPage={() => {
+            setPageNumber(pageNumber - 1);
+          }}
+          pageSize={pageSize}
+        />
+      ) : (
+        <></>
+      )}
     </>
   );
 };
