@@ -27,9 +27,31 @@ export const favoritesSlice = createSlice({
     addAuthor: (state, action: PayloadAction<string>) => {
       state.author = [...state.author, action.payload];
     },
+    removeSource: (state, action: PayloadAction<ISource>) => {
+      state.sources = state.sources.filter(
+        (src: ISource) => src.id !== action.payload.id
+      );
+    },
+    removeCategory: (state, action: PayloadAction<string>) => {
+      state.category = state.category.filter(
+        (cat: string) => cat !== action.payload
+      );
+    },
+    removeAuthor: (state, action: PayloadAction<string>) => {
+      state.author = state.author.filter(
+        (author: string) => author !== action.payload
+      );
+    },
   },
 });
 
-export const { addSource, addCategory, addAuthor } = favoritesSlice.actions;
+export const {
+  addSource,
+  addCategory,
+  addAuthor,
+  removeSource,
+  removeCategory,
+  removeAuthor,
+} = favoritesSlice.actions;
 
 export default favoritesSlice.reducer;

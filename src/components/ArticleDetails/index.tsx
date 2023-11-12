@@ -1,8 +1,12 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLoaderData } from "react-router-dom";
 import { getArticleByTitle } from "../../APIs/newsAPI";
-import { addAuthor } from "../../features/favorites/favoritesSlice";
+import {
+  addAuthor,
+  removeAuthor,
+} from "../../features/favorites/favoritesSlice";
 import { IArticles, INewsResponse } from "../../models/news";
+import { RootState } from "../../store";
 import SourceTag from "../ArticlesSection/sourceTag";
 import { IconExternal, IconFavorite } from "../UI/Icons";
 
@@ -16,6 +20,7 @@ export async function loader({ params }: { params: any }) {
 
 const ArticleDetails = () => {
   const dispatch = useDispatch();
+  const favorites = useSelector((state: RootState) => state.favorites);
   const { article } = useLoaderData() as { article: IArticles };
   if (!article.title) {
     return <div>No Article found</div>;
@@ -36,10 +41,22 @@ const ArticleDetails = () => {
             </div>
             <button
               className="flex items-center text-teal underline"
-              onClick={() => dispatch(addAuthor(article.author))}
+              onClick={() => {
+                if (favorites.author.includes(article.author)) {
+                  dispatch(removeAuthor(article.author));
+                  return;
+                }
+                dispatch(addAuthor(article.author));
+              }}
             >
-              <span>Add this category to Favorites</span>
-              <IconFavorite className="w-4 h-4" />
+              {favorites.author.includes(article.author) ? (
+                <span>Remove this author from Favorites</span>
+              ) : (
+                <>
+                  <span>Add this author to Favorites</span>
+                  <IconFavorite className="w-4 h-4" />
+                </>
+              )}
             </button>
           </div>
           <div>
