@@ -27,9 +27,10 @@ const ArticlesSection = ({
   isLoading,
 }: ArticlesSectionProps) => {
   const favorites = useSelector((state: RootState) => state.favorites);
-  console.log("favorites :", favorites);
   let [searchParams, setSearchParams] = useSearchParams();
   const [sources, setSources] = useState<ISource[]>([]);
+  const [articlesToDisplay, setArticlesToDisplay] =
+    useState<IArticles[]>(articles);
   const [pageNumber, setPageNumber] = useState<number>(
     Number(searchParams.get("page"))
       ? Number(searchParams.get("page")) > Math.ceil(totalResult / pageSize)
@@ -68,6 +69,17 @@ const ArticlesSection = ({
         : ["business-insider", "abc-news", "google-news"]
     );
   }, [favorites.sources]);
+
+  useEffect(() => {
+    setArticlesToDisplay(
+      favorites.author.length
+        ? articles.filter((article: IArticles) =>
+            favorites.author.includes(article.author)
+          )
+        : articles
+    );
+    // }
+  }, [articles, favorites.author]);
 
   useEffect(() => {
     setSelectedSources(
@@ -239,7 +251,7 @@ const ArticlesSection = ({
         </div>
       ) : articles.length ? (
         <div className="flex flex-wrap">
-          {articles.map((article: IArticles) => (
+          {articlesToDisplay.map((article: IArticles) => (
             <ArticleCard
               key={article.url}
               imgSrc={article.urlToImage}
