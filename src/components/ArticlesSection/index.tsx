@@ -77,7 +77,6 @@ const ArticlesSection = ({
     // }
   }, [articles, favorites.author]);
 
-  console.log("articles", articles);
   useEffect(() => {
     setSelectedSources(
       favorites.category.length
