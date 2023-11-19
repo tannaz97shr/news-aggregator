@@ -16,7 +16,9 @@ export const getEverything = async (
         sources ? `sources=${sources}&` : ""
       }${keyword ? `q=${keyword}&` : ""}${from ? `from=${from}&` : ""}${
         to ? `to=${to}&` : ""
-      }pageSize=${pageSize ? pageSize : 10}&page=${page ? page : 1}`,
+      }pageSize=${pageSize ? pageSize : 10}&page=${
+        page ? page : 1
+      }&apiKey=${apiKey}`,
       {
         headers: { "X-Api-Key": apiKey },
       }
