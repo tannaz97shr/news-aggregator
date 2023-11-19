@@ -1,7 +1,7 @@
 {
   "headers": [
     {
-      "source": "https://newsapi.org/(.*)",
+      "source": "https://newsapi.org",
       "headers": [
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "*" },
