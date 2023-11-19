@@ -18,7 +18,7 @@ export const getEverything = async (
         to ? `to=${to}&` : ""
       }pageSize=${pageSize ? pageSize : 10}&page=${page ? page : 1}`,
       {
-        headers: { Authorization: apiKey },
+        headers: { "X-Api-Key": apiKey },
       }
     );
     const news: INewsResponse = await response.json();
